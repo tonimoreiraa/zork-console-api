@@ -7,6 +7,11 @@ export const createAccountSchema = vine.compile(
     })
 )
 
+export const accountIdValidator = vine.number().exists((db, value) => {
+    return db.query()
+        .select().from('accounts').where('id', value).firstOrFail()
+})
+
 export function isValidCNPJ(cnpj: string): boolean {
     // Remove caracteres não numéricos
     cnpj = cnpj.replace(/[^\d]+/g, '');
