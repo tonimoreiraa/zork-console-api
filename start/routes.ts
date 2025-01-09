@@ -24,5 +24,6 @@ router.group(() => {
   const AccountMembersController = () => import('#controllers/account_members_controller')
   router.resource('/account-members', AccountMembersController)
     .only(['store', 'destroy', 'index'])
+  router.post('/account-members/many', [AccountMembersController, 'storeMany'])
 
 }).middleware(middleware.auth())
