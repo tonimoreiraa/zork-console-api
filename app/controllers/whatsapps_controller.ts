@@ -1,5 +1,6 @@
 import { evolution } from '#config/evolution'
 import InboxWhatsapp from '#models/inbox_whatsapp'
+import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class WhatsAppsController {
@@ -14,9 +15,9 @@ export default class WhatsAppsController {
             })
         }
 
-
+        const instanceName = `zork-${user.id}-${accountId}-` + cuid()
         const instanceResponse = await evolution.post('instance/create', {
-            instanceName: `zork-${user.id}-${accountId}`,
+            instanceName,
             qrcode: true,
             integration: 'WHATSAPP-BAILEYS',
         })
