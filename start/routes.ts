@@ -30,5 +30,10 @@ router.group(() => {
   const AccountTeamsController = () => import('#controllers/account_teams_controller')
   router.post('/account-teams/many', [AccountTeamsController, 'storeMany'])
 
+  // WhatsApp Resource
+
+  const WhatsAppsController = () => import('#controllers/whatsapps_controller')
+  router.post('/whatsapps', [WhatsAppsController, 'createInstance'])
+
 
 }).middleware(middleware.auth())
