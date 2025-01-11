@@ -14,26 +14,48 @@ export default class WhatsAppsController {
             })
         }
 
-        try {
-            const instanceResponse = await evolution.post('instance/create', {
-                instanceName: `zork-${user.id}-${accountId}`,
-                qrcode: true,
-                integration: 'WHATSAPP-BAILEYS',
-            })
-            const whatsapp = await InboxWhatsapp.create({
-                accountId,
-                hash: instanceResponse.data.hash,
-                instanceName: instanceResponse.data.instance.instanceName,
-                instanceId: instanceResponse.data.instance.instanceId,
-                server: evolution.defaults.baseURL,
-            })
+        const instanceResponse = await evolution.post('instance/create', {
+            instanceName: `zork-${user.id}-${accountId}`,
+            qrcode: true,
+            integration: 'WHATSAPP-BAILEYS',
+        })
+        const whatsapp = await InboxWhatsapp.create({
+            accountId,
+            hash: instanceResponse.data.hash,
+            instanceName: instanceResponse.data.instance.instanceName,
+            instanceId: instanceResponse.data.instance.instanceId,
+            server: evolution.defaults.baseURL,
+        })
 
+        return {
+            ...whatsapp.serialize(),
+            code: instanceResponse.data.qrcode.code,
+        };
+    }
+
+    async getStatus({ request }: HttpContext) {
+        const whatsappId = request.param('id')
+        const inbox = await InboxWhatsapp.findOrFail(whatsappId)
+
+        const response = await evolution.get('/instance/connectionState/' + inbox.instanceName)
+
+        if (response.data.instance.state == 'connecting') {
+            const qrcodeResponse = await evolution.get('/instance/connect/' + inbox.instanceName)
             return {
-                ...whatsapp.serialize(),
-                code: instanceResponse.data.qrcode.code,
-            };
-        } catch (e) {
-            console.log(e);
+                ...response.data.instance,
+                qrcode: qrcodeResponse.data
+            }
         }
+
+        if (response.data.instance.state == 'open') {
+            const instancesResponse = await evolution.get('/instance/fetchInstances')
+            const instanceData = instancesResponse.data.find((i: any) => i.id == inbox.instanceId)
+            return {
+                ...response.data.instance,
+                instanceData
+            }
+        }
+
+        return response.data.instance;
     }
 }
