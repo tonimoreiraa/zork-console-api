@@ -14,6 +14,7 @@ export default class WhatsAppsController {
             })
         }
 
+
         const instanceResponse = await evolution.post('instance/create', {
             instanceName: `zork-${user.id}-${accountId}`,
             qrcode: true,
@@ -57,5 +58,17 @@ export default class WhatsAppsController {
         }
 
         return response.data.instance;
+    }
+
+    async destroy({ request }: HttpContext) {
+        const whatsappId = request.param('id')
+        const inbox = await InboxWhatsapp.findOrFail(whatsappId)
+
+        await evolution.delete('/instance/logout/' + inbox.instanceName)
+            .catch(_ => { })
+        await evolution.delete('/instance/delete/' + inbox.instanceName)
+        await inbox.delete()
+
+        return { message: 'OK' }
     }
 }

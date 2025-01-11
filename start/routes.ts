@@ -35,6 +35,7 @@ router.group(() => {
   const WhatsAppsController = () => import('#controllers/whatsapps_controller')
   router.post('/whatsapps', [WhatsAppsController, 'createInstance'])
   router.get('/whatsapps/:id/status', [WhatsAppsController, 'getStatus'])
+  router.delete('/whatsapps/:id', [WhatsAppsController, 'destroy'])
 
 
 }).middleware(middleware.auth())
