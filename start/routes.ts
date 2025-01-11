@@ -26,4 +26,9 @@ router.group(() => {
     .only(['store', 'destroy', 'index'])
   router.post('/account-members/many', [AccountMembersController, 'storeMany'])
 
+  // Account Teams resource
+  const AccountTeamsController = () => import('#controllers/account_teams_controller')
+  router.post('/account-teams/many', [AccountTeamsController, 'storeMany'])
+
+
 }).middleware(middleware.auth())
