@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import Account from './account.js'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import AccountTeamMember from './account_team_member.js'
 
 export default class AccountTeam extends BaseModel {
   @column({ isPrimary: true })
@@ -22,8 +23,13 @@ export default class AccountTeam extends BaseModel {
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
-  @hasMany(() => AccountTeam)
-  declare teams: HasMany<typeof AccountTeam>
+  @column()
+  declare chatwootTeamId: number
+
+  @hasMany(() => AccountTeamMember, {
+    foreignKey: 'teamId',
+  })
+  declare members: HasMany<typeof AccountTeamMember>
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime

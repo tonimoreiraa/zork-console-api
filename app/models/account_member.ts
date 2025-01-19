@@ -22,6 +22,9 @@ export default class AccountMember extends BaseModel {
   @column()
   declare role: 'member' | 'admin'
 
+  @column()
+  declare chatwootUserId: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

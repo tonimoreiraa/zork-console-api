@@ -12,13 +12,16 @@ const AuthController = () => import('#controllers/auth_controller')
 
 router.post('/auth/sign-in', [AuthController, 'signIn'])
 router.post('/auth/sign-up', [AuthController, 'signUp'])
+const AccountsController = () => import('#controllers/accounts_controller')
+
+router.post('/accounts/:id/deploy', [AccountsController, 'deploySettings'])
 
 router.group(() => {
 
   // Accounts resource
-  const AccountsController = () => import('#controllers/accounts_controller')
   router.post('/accounts', [AccountsController, 'store'])
     .middleware(middleware.auth())
+
 
   // Account members resource
   const AccountMembersController = () => import('#controllers/account_members_controller')
@@ -36,6 +39,5 @@ router.group(() => {
   router.post('/whatsapps', [WhatsAppsController, 'createInstance'])
   router.get('/whatsapps/:id/status', [WhatsAppsController, 'getStatus'])
   router.delete('/whatsapps/:id', [WhatsAppsController, 'destroy'])
-
 
 }).middleware(middleware.auth())

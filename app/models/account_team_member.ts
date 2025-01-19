@@ -17,7 +17,9 @@ export default class AccountTeamMember extends BaseModel {
   @column()
   declare memberId: number
 
-  @belongsTo(() => AccountMember)
+  @belongsTo(() => AccountMember, {
+    foreignKey: 'memberId'
+  })
   declare member: BelongsTo<typeof AccountMember>
 
   @column.dateTime({ autoCreate: true })
