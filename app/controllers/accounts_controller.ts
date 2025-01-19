@@ -1,5 +1,7 @@
 import { chatwoot, chatwootRoot } from '#config/chatwoot'
+import { evolution } from '#config/evolution'
 import Account from '#models/account'
+import InboxWhatsapp from '#models/inbox_whatsapp'
 import env from '#start/env'
 import { createAccountSchema, isValidCNPJ } from '#validators/account'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -75,7 +77,7 @@ export default class AccountsController {
         for (const member of account.members) {
             try {
                 // Create user in Chatwoot
-                const userResponse: ChatwootResponse = await chatwootRoot.post(`/api/v1/accounts/${account.chatwootAccountId}/users`, {
+                const userResponse: ChatwootResponse = await chatwootRoot.post(`/api/v1/accounts/${account.chatwootAccountId}/agents`, {
                     name: member.name,
                     email: member.email,
                     role: member.role === 'admin' ? 'administrator' : 'agent',
@@ -132,7 +134,26 @@ export default class AccountsController {
             }
         }
 
-        await removeRootAccount(account.chatwootAccountId)
+
+        const whatsappInstances = await InboxWhatsapp.query()
+            .where('accountId', account.id)
+
+        for (const whatsapp of whatsappInstances) {
+            await evolution.post(`/chatwoot/set/${whatsapp.instanceName}`, {
+                enabled: true,
+                account_id: account.chatwootAccountId,
+                token: env.get('CHATWOOT_ROOT_API_KEY'),
+                url: 'https://app.zork.chat',
+                sign_msg: true,
+                sign_delimiter: "\n",
+                reopen_conversation: true,
+                conversation_pending: true,
+                import_contacts: true,
+                import_messages: false,
+                days_limit_import_messages: 1,
+                auto_create: true
+            })
+        }
 
         return { success: true }
     }
