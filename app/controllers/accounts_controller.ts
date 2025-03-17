@@ -23,6 +23,13 @@ async function removeRootAccount(accountId: number) {
 
 export default class AccountsController {
 
+    async index({ auth }: HttpContext) {
+        const user = auth.getUserOrFail()
+        const accounts = await Account.query()
+            .where('user_id', user.id)
+        return accounts;
+    }
+
     async store({ request, auth, response }: HttpContext) {
         const payload = await request.validateUsing(
             createAccountSchema

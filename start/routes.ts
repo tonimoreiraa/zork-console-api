@@ -19,8 +19,9 @@ router.post('/accounts/:id/deploy', [AccountsController, 'deploySettings'])
 router.group(() => {
 
   // Accounts resource
-  router.post('/accounts', [AccountsController, 'store'])
-    .middleware(middleware.auth())
+  router.resource('/accounts', AccountsController)
+    .only(['store', 'index'])
+    .use('*', middleware.auth())
 
 
   // Account members resource
