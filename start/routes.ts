@@ -32,6 +32,7 @@ router.group(() => {
 
   // Account Teams resource
   const AccountTeamsController = () => import('#controllers/account_teams_controller')
+  router.resource('/account-teams', AccountTeamsController)
   router.post('/account-teams/many', [AccountTeamsController, 'storeMany'])
 
   // WhatsApp Resource

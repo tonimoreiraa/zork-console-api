@@ -16,7 +16,7 @@ export default class AccountTeamsController {
 
         const teams = await AccountTeam.query()
             .where('account_id', accountId)
-            .preload('teams')
+            .preload('members')
 
         return teams;
     }
