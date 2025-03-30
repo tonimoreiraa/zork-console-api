@@ -30,4 +30,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   CHATWOOT_ROOT_USER_ID: Env.schema.string(),
   CHATWOOT_ROOT_API_KEY: Env.schema.string(),
 
+  STRIPE_SECRET_KEY: Env.schema.string(),
+
 })

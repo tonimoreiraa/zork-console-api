@@ -61,7 +61,8 @@
     "axios": "^1.7.9",
     "luxon": "^3.5.0",
     "pg": "^8.13.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "stripe": "^17.7.0"
   },
   "hotHook": {
     "boundaries": [
