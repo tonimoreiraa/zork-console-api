@@ -16,6 +16,9 @@ const AccountsController = () => import('#controllers/accounts_controller')
 
 router.post('/accounts/:id/deploy', [AccountsController, 'deploySettings'])
 
+
+const PaymentsController = () => import('#controllers/payments_controller')
+
 router.group(() => {
 
   // Accounts resource
@@ -36,10 +39,14 @@ router.group(() => {
   router.post('/account-teams/many', [AccountTeamsController, 'storeMany'])
 
   // WhatsApp Resource
-
   const WhatsAppsController = () => import('#controllers/whatsapps_controller')
   router.post('/whatsapps', [WhatsAppsController, 'createInstance'])
   router.get('/whatsapps/:id/status', [WhatsAppsController, 'getStatus'])
   router.delete('/whatsapps/:id', [WhatsAppsController, 'destroy'])
 
+  // Payment
+  router.post('/payments/create-payment-intent', [PaymentsController, 'createPaymentIntent'])
+  // router.get('/payments/stripe-webhook', [PaymentsController, 'stripeWebhook'])
 }).middleware(middleware.auth())
+
+router.get('/plans', [PaymentsController, 'listPlans'])
