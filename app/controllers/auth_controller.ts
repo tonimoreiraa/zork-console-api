@@ -1,3 +1,4 @@
+import { stripe } from '#config/stripe'
 import User from '#models/user'
 import { signUpSchema } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -36,6 +37,19 @@ export default class AuthController {
         )
 
         const user = await User.create(payload)
+
+        // Create customer on Stripe
+        const stripeCustomer = await stripe.customers.create({
+            email: user.email,
+            name: user.name,
+            metadata: {
+                userId: user.id
+            },
+        })
+
+        user.stripeCustomerId = stripeCustomer.id
+
+        await user.save()
 
         const token = await auth.use('web').login(user)
 
