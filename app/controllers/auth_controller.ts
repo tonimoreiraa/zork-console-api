@@ -55,4 +55,10 @@ export default class AuthController {
 
         return { user, token }
     }
+
+    async getSession({ auth }: HttpContext) {
+        const user = auth.getUserOrFail()
+        return user.serialize()
+    }
+    
 }

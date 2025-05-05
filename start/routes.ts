@@ -26,7 +26,6 @@ router.group(() => {
     .only(['store', 'index'])
     .use('*', middleware.auth())
 
-
   // Account members resource
   const AccountMembersController = () => import('#controllers/account_members_controller')
   router.resource('/account-members', AccountMembersController)
@@ -40,6 +39,7 @@ router.group(() => {
 
   // WhatsApp Resource
   const WhatsAppsController = () => import('#controllers/whatsapps_controller')
+  router.get('/whatsapps', [WhatsAppsController, 'index'])
   router.post('/whatsapps', [WhatsAppsController, 'createInstance'])
   router.get('/whatsapps/:id/status', [WhatsAppsController, 'getStatus'])
   router.delete('/whatsapps/:id', [WhatsAppsController, 'destroy'])
@@ -47,6 +47,9 @@ router.group(() => {
   // Payment
   router.post('/payments/create-payment-intent', [PaymentsController, 'createPaymentIntent'])
   // router.get('/payments/stripe-webhook', [PaymentsController, 'stripeWebhook'])
+
+  router.get('/auth/session', [AuthController, 'getSession'])
+
 }).middleware(middleware.auth())
 
 router.get('/plans', [PaymentsController, 'listPlans'])
