@@ -18,6 +18,7 @@ router.post('/accounts/:id/deploy', [AccountsController, 'deploySettings'])
 
 
 const PaymentsController = () => import('#controllers/payments_controller')
+const StripeController = () => import('#controllers/stripe_controller')
 
 router.group(() => {
 
@@ -53,3 +54,5 @@ router.group(() => {
 }).middleware(middleware.auth())
 
 router.get('/plans', [PaymentsController, 'listPlans'])
+
+router.post('/stripe-webhook', [StripeController, 'webhook'])

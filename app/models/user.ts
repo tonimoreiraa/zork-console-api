@@ -22,6 +22,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare stripeCustomerId: string
 
+  @column()
+  declare stripePriceId: string
+
+  @column()
+  declare hasAccess: boolean
+
   @column({ serializeAs: null })
   declare password: string
 
