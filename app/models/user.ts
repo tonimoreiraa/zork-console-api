@@ -26,6 +26,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare stripePriceId: string
 
   @column()
+  declare chatwootUserId: number
+
+  @column()
   declare hasAccess: boolean
 
   @column({ serializeAs: null })
