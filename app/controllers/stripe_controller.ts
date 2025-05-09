@@ -1,9 +1,11 @@
 import { chatwoot, chatwootRoot } from '#config/chatwoot'
 import { stripe } from '#config/stripe'
+import Account from '#models/account'
 import User from '#models/user'
 import env from '#start/env'
 import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 import Stripe from 'stripe'
 
 const endpointSecret = env.get('STRIPE_WEBHOOK_SECRET')
@@ -28,6 +30,8 @@ export default class StripeController {
                             expand: ['line_items']
                         }
                     )
+                    console.log(session)
+
                     const priceId = session.line_items?.data[0].price?.id
                     const customerId = session.customer as string
                     const customerDetails = session.customer_details as Stripe.Checkout.Session.CustomerDetails
@@ -48,10 +52,10 @@ export default class StripeController {
 
                     await user.save()
 
-                    const companyName = session.custom_fields.find(field => field.key == 'nomedaempresa')?.text?.value
+                    const accountName = session.custom_fields.find(field => field.key == 'nomedaempresa')?.text?.value as string
 
                     const accountResponse = await chatwoot.post('/platform/api/v1/accounts', {
-                        name: companyName,
+                        name: accountName,
                     })
 
                     const accountId = accountResponse.data.id
@@ -69,14 +73,24 @@ export default class StripeController {
                             email: user.email,
                             role: 'administrator'
                         })
-                        console.log(userResponse.data)
                         user.chatwootUserId = userResponse.data.id;
                         await user.save()
                     }
 
-                    // Get user SSO
-                    const loginSSOResponse = await chatwoot.get(`/platform/api/v1/users/${accountId}/login`)
+                    // Remove root user from account
+                    await chatwoot.delete(`/platform/api/v1/accounts/${accountId}/account_users`, {
+                        params: {
+                            user_id: env.get('CHATWOOT_ROOT_USER_ID'),
+                        }
+                    })
 
+                    const account = await Account.create({
+                        name: accountName,
+                        chatwootAccountId: accountId,
+                        userId: user.id,
+                        subscriptionId: session.subscription as string
+                    })
+                    logger.info(`Nova empresa: ${account.name} (${account.id}) | Usuário ${user.name} (${user.id})`)
                     break;
                 case 'customer.subscription.deleted':
                     const subscription = await stripe.subscriptions.retrieve(event.data.object.id)

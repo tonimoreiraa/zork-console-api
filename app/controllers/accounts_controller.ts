@@ -13,7 +13,7 @@ interface ChatwootResponse {
 }
 
 async function removeRootAccount(accountId: number) {
-    // Add root user to account
+    // Remove root user from account
     await chatwoot.delete(`/platform/api/v1/accounts/${accountId}/account_users`, {
         params: {
             user_id: env.get('CHATWOOT_ROOT_USER_ID'),

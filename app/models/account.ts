@@ -30,6 +30,12 @@ export default class Account extends BaseModel {
   @column()
   declare chatwootAccountId: number
 
+  @column()
+  declare priceId: string
+
+  @column()
+  declare subscriptionId: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
